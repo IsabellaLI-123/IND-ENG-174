@@ -11,7 +11,7 @@ import heapq
 arrival_times, severity_level_list = simulate_arrival_process()
 length_of_stays = generate_length_of_stays(severity_level_list)
 capacity = 100 # If you want to modify this parameter, please simultaneously modify 'capacity' in Part_2_CareGiver/CareRequest.py
-reserved_capacity = 20
+reserved_capacity = 30
 
 
 def simulate_departure_process_with_reserved_beds(arrival_times=arrival_times, severity_level_list=severity_level_list,
@@ -29,44 +29,54 @@ def simulate_departure_process_with_reserved_beds(arrival_times=arrival_times, s
         severity = severity_level_list[i]
         length_of_stay = length_of_stays[i]
 
+
+        while current_regular_ICU_departures and arrival_time >= current_regular_ICU_departures[0][0]:
+            previous_departure_time, departure_index = heapq.heappop(current_regular_ICU_departures)
+            departure_times[departure_index] = previous_departure_time
+
+
+        while current_reserved_ICU_departures and arrival_time >= current_reserved_ICU_departures[0][0]:
+            previous_departure_time, departure_index = heapq.heappop(current_reserved_ICU_departures)
+            departure_times[departure_index] = previous_departure_time
+
+
         if severity in [1, 2]:
             # if regular beds not full
             if len(current_regular_ICU_departures) < regular_capacity:
                 start_time = arrival_time
             else:
-                earliest_available_time = heapq.heappop(current_regular_ICU_departures)
+                earliest_available_time, available_index = heapq.heappop(current_regular_ICU_departures)
                 start_time = max(arrival_time, earliest_available_time)
             
             departure_time = start_time + length_of_stay * 24  
-            heapq.heappush(current_regular_ICU_departures, departure_time)
+            heapq.heappush(current_regular_ICU_departures, (departure_time, i))
 
         elif severity == 3:
             # if regular beds are not full
             if len(current_regular_ICU_departures) < regular_capacity:
                 start_time = arrival_time
                 departure_time = start_time + length_of_stay * 24
-                heapq.heappush(current_regular_ICU_departures, departure_time)
+                heapq.heappush(current_regular_ICU_departures, (departure_time, i))
             # if regular beds full but reserved beds are not full
             elif len(current_reserved_ICU_departures) < reserved_capacity:
                 start_time = arrival_time
                 departure_time = start_time + length_of_stay * 24
-                heapq.heappush(current_reserved_ICU_departures, departure_time)
+                heapq.heappush(current_reserved_ICU_departures, (departure_time, i))
             # if regular and reserved beds are both full
             else:
-                next_regular_available = current_regular_ICU_departures[0] 
-                next_reserved_available = current_reserved_ICU_departures[0] 
+                next_regular_available = current_regular_ICU_departures[0][0] 
+                next_reserved_available = current_reserved_ICU_departures[0][0] 
 
                 earliest_available_time = min(next_regular_available, next_reserved_available)
                 start_time = max(arrival_time, earliest_available_time)
-
                 if earliest_available_time == next_regular_available:
                     heapq.heappop(current_regular_ICU_departures)
                     departure_time = start_time + length_of_stay * 24
-                    heapq.heappush(current_regular_ICU_departures, departure_time)
+                    heapq.heappush(current_regular_ICU_departures, (departure_time, i))
                 else:
                     heapq.heappop(current_reserved_ICU_departures)
                     departure_time = start_time + length_of_stay * 24
-                    heapq.heappush(current_reserved_ICU_departures, departure_time)
+                    heapq.heappush(current_reserved_ICU_departures, (departure_time, i))
 
         start_times.append(start_time)
         departure_times.append(departure_time)

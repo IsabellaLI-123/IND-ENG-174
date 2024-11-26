@@ -3,7 +3,7 @@ import heapq
 from ArrivalProcess import simulate_arrival_process, generate_length_of_stays
 
 arrival_times, severity_level_list = simulate_arrival_process()
-average_length_of_stays = generate_length_of_stays(severity_level_list)
+length_of_stays = generate_length_of_stays(severity_level_list)
 capacity = 100  # Maximum ICU capacity
 
 def simulate_departure_process_priority(arrival_times=arrival_times, severity_level_list=severity_level_list, capacity=capacity):
@@ -16,7 +16,7 @@ def simulate_departure_process_priority(arrival_times=arrival_times, severity_le
         temporary_departure_time_list = []
         arrival_time = arrival_times[i]
         severity = severity_level_list[i]
-        length_of_stay = average_length_of_stays[i]
+        length_of_stay = length_of_stays[i]
 
         while current_ICU_departures and arrival_time >= current_ICU_departures[0][0]:
             previous_departure_time, departure_index = heapq.heappop(current_ICU_departures)
@@ -30,7 +30,7 @@ def simulate_departure_process_priority(arrival_times=arrival_times, severity_le
                 start_times[waiting_index] = start_time
 
                 # Calculate departure time and add to ICU
-                departure_time = start_time + average_length_of_stays[waiting_index] * 24
+                departure_time = start_time + length_of_stays[waiting_index] * 24
                 departure_times[waiting_index] = departure_time
                 heapq.heappush(current_ICU_departures, (departure_time, waiting_index))
                 
@@ -64,7 +64,7 @@ def simulate_departure_process_priority(arrival_times=arrival_times, severity_le
             start_times[waiting_index] = start_time
 
             # Calculate departure time and add to ICU
-            departure_time = start_time + average_length_of_stays[waiting_index] * 24
+            departure_time = start_time + length_of_stays[waiting_index] * 24
             departure_times[waiting_index] = departure_time
             heapq.heappush(current_ICU_departures, (departure_time, waiting_index))
           
@@ -75,7 +75,7 @@ def simulate_departure_process_priority(arrival_times=arrival_times, severity_le
             start_times[waiting_index] = start_time
 
             # Calculate departure time and add to ICU
-            departure_time = start_time + average_length_of_stays[waiting_index] * 24
+            departure_time = start_time + length_of_stays[waiting_index] * 24
             departure_times[waiting_index] = departure_time
             heapq.heappush(current_ICU_departures, departure_time)
 
@@ -89,7 +89,7 @@ def simulate_departure_process_priority(arrival_times=arrival_times, severity_le
             start_times[waiting_index] = start_time
 
             # Calculate departure time and add to ICU
-            departure_time = start_time + average_length_of_stays[waiting_index] * 24
+            departure_time = start_time + length_of_stays[waiting_index] * 24
             departure_times[waiting_index] = departure_time
             heapq.heappush(current_ICU_departures, (departure_time, waiting_index))
             current_time = start_time

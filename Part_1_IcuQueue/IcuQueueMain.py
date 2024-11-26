@@ -1,4 +1,4 @@
-from DepartureProcess import simultaneously_return
+from DepartureProcessWithPQandReservedBeds import simultaneously_return
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
