@@ -1,0 +1,2 @@
+Total Penalty (Logistic): 89.6644475780473
+Average Penalty per Patient: 0.2591458022486916

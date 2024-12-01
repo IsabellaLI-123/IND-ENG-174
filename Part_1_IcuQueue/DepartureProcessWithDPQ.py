@@ -14,7 +14,6 @@ capacity = 100  # ICU capacity
 def penalty_function(m_1, alpha_1, severity, waiting_time):
     return m_1 * (severity ** 2) + alpha_1 * (waiting_time ** 1.5)
 
-
 def simulate_departure_process_with_dynamic_priority(arrival_times, severity_level_list, length_of_stays, capacity, m_1, alpha_1):
     
     num_patients = len(arrival_times)
