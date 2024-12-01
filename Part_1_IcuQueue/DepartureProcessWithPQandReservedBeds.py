@@ -86,64 +86,39 @@ def simulate_departure_process_priority_with_reserved(arrival_times=arrival_time
 
     while waiting_queue:
 
-        # Assign the current patient
-        if len(current_regular_ICU_departures) < regular_capacity:
+        if severity_level_list[waiting_queue[0][1]] == 3:
+            if current_regular_ICU_departures[0][0] <= current_reserved_ICU_departures[0][0]:
+                earliest_available_time, departure_index = heapq.heappop(current_regular_ICU_departures)
+                current_ICU_departures = current_regular_ICU_departures
+            else:
+                earliest_available_time, departure_index = heapq.heappop(current_reserved_ICU_departures)
+                current_ICU_departures = current_reserved_ICU_departures
+
             _, waiting_severity, waiting_index = heapq.heappop(waiting_queue)
-            start_time = current_time
+
+            # Assign the bed to the patient in the waiting queue
+            start_time = earliest_available_time
+            start_times[waiting_index] = start_time
+
+            # Calculate departure time and add to ICU
+            departure_time = start_time + length_of_stays[waiting_index] * 24
+            departure_times[waiting_index] = departure_time
+            heapq.heappush(current_ICU_departures, (departure_time, waiting_index))
+            # current_time = start_time
+        else:
+            earliest_available_time, departure_index = heapq.heappop(current_regular_ICU_departures) 
+            _, waiting_severity, waiting_index = heapq.heappop(waiting_queue)
+
+            # Assign the bed to the patient in the waiting queue
+            start_time = earliest_available_time
             start_times[waiting_index] = start_time
 
             # Calculate departure time and add to ICU
             departure_time = start_time + length_of_stays[waiting_index] * 24
             departure_times[waiting_index] = departure_time
             heapq.heappush(current_regular_ICU_departures, (departure_time, waiting_index))
+            # current_time = start_time
 
-            
-
-        elif severity_level_list[waiting_queue[0][1]] == 3 and len(current_reserved_ICU_departures) < reserved_capacity:
-            _, waiting_severity, waiting_index = heapq.heappop(waiting_queue)
-            start_time = current_time
-            start_times[waiting_index] = start_time
-
-            # Calculate departure time and add to ICU
-            departure_time = start_time + length_of_stays[waiting_index] * 24
-            departure_times[waiting_index] = departure_time
-            heapq.heappush(current_reserved_ICU_departures, (departure_time, waiting_index))
-
-
-        else:
-            if severity_level_list[waiting_queue[0][1]] == 3:
-                if current_regular_ICU_departures[0][0] <= current_reserved_ICU_departures[0][0]:
-                    earliest_available_time, departure_index = heapq.heappop(current_regular_ICU_departures)
-                    current_ICU_departures = current_regular_ICU_departures
-                else:
-                    earliest_available_time, departure_index = heapq.heappop(current_reserved_ICU_departures)
-                    current_ICU_departures = current_reserved_ICU_departures
-
-                _, waiting_severity, waiting_index = heapq.heappop(waiting_queue)
-
-                # Assign the bed to the patient in the waiting queue
-                start_time = earliest_available_time
-                start_times[waiting_index] = start_time
-
-                # Calculate departure time and add to ICU
-                departure_time = start_time + length_of_stays[waiting_index] * 24
-                departure_times[waiting_index] = departure_time
-                heapq.heappush(current_ICU_departures, (departure_time, waiting_index))
-                # current_time = start_time
-            else:
-                earliest_available_time, departure_index = heapq.heappop(current_regular_ICU_departures) 
-                _, waiting_severity, waiting_index = heapq.heappop(waiting_queue)
-
-                # Assign the bed to the patient in the waiting queue
-                start_time = earliest_available_time
-                start_times[waiting_index] = start_time
-
-                # Calculate departure time and add to ICU
-                departure_time = start_time + length_of_stays[waiting_index] * 24
-                departure_times[waiting_index] = departure_time
-                heapq.heappush(current_regular_ICU_departures, (departure_time, waiting_index))
-                current_time = start_time
-    
 
 
 
