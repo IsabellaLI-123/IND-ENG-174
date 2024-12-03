@@ -1,6 +1,6 @@
 import sys
 
-project_root = '/Users/kennychan/Downloads/IND-ENG-174'
+project_root = '/Users/sizheli/Desktop/INDENG_174/IND-ENG-174'
 sys.path.append(project_root)
 
 from Part_1_IcuQueue.ArrivalProcess import simulate_arrival_process

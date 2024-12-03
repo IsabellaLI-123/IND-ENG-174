@@ -1,9 +1,9 @@
 import sys
 
-project_root = '/Users/李奕瑶/IND-ENG-174'
+project_root = '/Users/sizheli/Desktop/INDENG_174/IND-ENG-174'
 sys.path.append(project_root)
 
-from Part_1_IcuQueue.DepartureProcess import simultaneously_return
+from Part_1_IcuQueue.DepartureProcessWithFIFO import simultaneously_return
 
 import heapq
 import numpy as np
@@ -20,6 +20,9 @@ time_horizon = 10 # If you want to modify this parameter, please simultaneously 
 
 service_type = [1, 2, 3] # 1 - small-scale ; 2 - medium-scale ; 3 - large-scale
 mean_service_time = [0.2, 0.5, 1] # in hours
+
+b_1 = 0.2 # The cutoff point between the early and middle stages
+b_2 = 0.9 # The cutoff point between the middle and late stages
 
 service_probabilities = {
     1: {  
@@ -41,7 +44,7 @@ service_probabilities = {
 
 def simulate_service_process(request_frequency=request_frequency, capacity=capacity, number_of_care_givers=number_of_care_givers,
                              time_horizon=time_horizon, start_times=start_times, departure_times=departure_times, severity_level_list=severity_level_list,
-                             service_type=service_type, mean_service_time=mean_service_time):
+                             service_type=service_type, mean_service_time=mean_service_time, b_1 = b_1, b_2 = b_2):
   
 
     patient_states = [0] * len(arrival_times)
@@ -99,9 +102,9 @@ def simulate_service_process(request_frequency=request_frequency, capacity=capac
             fraction_elapsed = elapsed_time / total_stay_duration
 
  
-            if fraction_elapsed <= 0.2:
+            if fraction_elapsed <= b_1:
                 phase = 'first'
-            elif fraction_elapsed <= 0.9:
+            elif fraction_elapsed <= b_2:
                 phase = 'middle'
             else:
                 phase = 'last'
@@ -136,4 +139,4 @@ def simulate_service_process(request_frequency=request_frequency, capacity=capac
     service_waiting_times = [x * 60 for x in service_waiting_times]
     return service_waiting_times, severity_cor_waiting_times
 
-print(simulate_service_process())
+#print(simulate_service_process())

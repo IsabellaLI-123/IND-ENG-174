@@ -1,4 +1,4 @@
-from DepartureProcessWithDPQ import simultaneously_return
+from DepartureProcessWithPQandReservedBeds import simultaneously_return
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -9,23 +9,22 @@ arrival_times, severity_level_list, start_times, departure_times, waiting_times 
 
 # Penalty Function using Logistic Regression
 alpha_1 = 0.01  # Logistic sensitivity for severity and waiting time
-beta_1 = 3    # Logistic bias
 m_1 = 1
 
-def penaltyFunction_logistic(m_1=m_1, alpha_1=alpha_1, beta_1=beta_1, severity_level_list=severity_level_list, waiting_times=waiting_times):
+def penaltyFunction(m_1=m_1, alpha_1=alpha_1, severity_level_list=severity_level_list, waiting_times=waiting_times):
     total_penalty = 0
     for i in range(len(waiting_times)):
         severity = severity_level_list[i]
         waiting_time = waiting_times[i]
         # Calculate mortality probability using logistic regression
-        mortality_probability = 1 / (1 + np.exp(-(alpha_1 * severity * waiting_time - beta_1)))
+        mortality_probability = np.e ** (alpha_1 * severity * waiting_time) - 1
         # Total penalty as the sum of mortality probabilities
         total_penalty += m_1 * mortality_probability
     return total_penalty
 
 
 # Calculate average penalty
-total_penalty = penaltyFunction_logistic()
+total_penalty = penaltyFunction()
 num_patients = len(waiting_times)
 average_penalty = total_penalty / num_patients
 
@@ -70,8 +69,7 @@ def plot_discrete_severity_distribution(waiting_times, severity_levels, bin_size
     if save_path:
         plt.savefig(save_path, dpi=300)
         print(f"Plot saved to {save_path}")
-    else:
-        plt.show()
+    plt.show()
 
 # Create output directories
 output_dir = "Part_1_IcuQueue"
@@ -83,7 +81,7 @@ results_dir = os.path.join(output_dir, "results")
 os.makedirs(results_dir, exist_ok=True)
 
 # Define the simulation results file path
-results_file_name = "reserved.csv"
+results_file_name = "PQ+reserved.csv"
 csv_path = os.path.join(results_dir, results_file_name)
 
 # Save simulation results to the new file
@@ -98,25 +96,23 @@ results_df.to_csv(csv_path, index=False)
 print(f"Simulation results saved to {csv_path}")
 
 # Save the plot to the figures folder
-plot_path = os.path.join(figures_dir, "reserved.png")
+plot_path = os.path.join(figures_dir, "PQ+reserved.png") 
 plot_discrete_severity_distribution(waiting_times, severity_level_list, save_path=plot_path)
 
 # Create a penalties subdirectory
 penalties_dir = os.path.join(output_dir, "penalties")
 os.makedirs(penalties_dir, exist_ok=True)
 
-# Save the logistic penalty function result and average penalty to a file
-penalty_result_logistic = penaltyFunction_logistic()
+penalty_result_logistic = penaltyFunction()
 average_penalty = penalty_result_logistic / num_patients
 
-penalty_file_name = "reserved.txt"
+penalty_file_name = "PQ+reserved.txt" 
 penalty_path = os.path.join(penalties_dir, penalty_file_name)
 
 with open(penalty_path, "w") as f:
-    f.write(f"Total Penalty (Logistic): {penalty_result_logistic}\n")
-    f.write(f"Average Penalty per Patient: {average_penalty}\n")
+    f.write(f"Penalty 1: {penalty_result_logistic}\n")
 
-print(f"Penalty result (Logistic) saved to {penalty_path}")
+print(f"Penalty result saved to {penalty_path}")
 
 
 
