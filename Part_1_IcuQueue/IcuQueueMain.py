@@ -1,12 +1,14 @@
-<<<<<<< HEAD
-from DepartureProcessWithPQandReservedBeds import simultaneously_return
-=======
 from DepartureProcessWithDPQandReservedBeds import simultaneously_return
->>>>>>> 2eea173797c2f2011c897100e228c4fc6ba177b0
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import os
+import random
+from scipy import stats
+
+random_seed = 5
+random.seed(random_seed)
+np.random.seed(random_seed)
 
 # Fetch data
 arrival_times, severity_level_list, start_times, departure_times, waiting_times = simultaneously_return()
@@ -44,11 +46,7 @@ print(penaltyFunction1())
 
 
 # Calculate average penalty
-<<<<<<< HEAD
-total_penalty = penaltyFunction()
-=======
 penalty = penaltyFunction1()
->>>>>>> 2eea173797c2f2011c897100e228c4fc6ba177b0
 num_patients = len(waiting_times)
 #average_penalty = total_penalty / num_patients
 
@@ -131,12 +129,8 @@ plot_discrete_severity_distribution(waiting_times, severity_level_list, save_pat
 penalties_dir = os.path.join(output_dir, "penalties")
 os.makedirs(penalties_dir, exist_ok=True)
 
-<<<<<<< HEAD
-penalty_result_logistic = penaltyFunction()
-=======
 # Save the logistic penalty function result and average penalty to a file
 penalty_result_logistic = penaltyFunction1()
->>>>>>> 2eea173797c2f2011c897100e228c4fc6ba177b0
 average_penalty = penalty_result_logistic / num_patients
 
 penalty_file_name = "PQ+reserved.txt" 
@@ -148,22 +142,29 @@ with open(penalty_path, "w") as f:
 print(f"Penalty result saved to {penalty_path}")
 
 
+def penalty_average(sample_size, m_1 = m_1, alpha_1 = alpha_1):
+    penalty_list = []
+    for i in range(sample_size):
+        arrival_times, severity_level_list, start_times, departure_times, waiting_times = simultaneously_return()
+        penalty = float(penaltyFunction1(m_1, alpha_1, severity_level_list, waiting_times))
+        penalty_list.append(penalty)
+        average_penalty = np.average(penalty_list)
+    return average_penalty, penalty_list
 
+average_penalty, penalty_list = penalty_average(100)
+#print(penalty_list)
 
+def calculate_confidence_interval(data = penalty_list, confidence=0.95):
+    mean = np.mean(data)
+    
+    se = stats.sem(data)  
+    
+    z = stats.norm.ppf((1 + confidence) / 2)
 
-"""
-severity_level_list check
-total_1 = 0
-total_2 = 0
-total_3 = 0
-for i in severity_level_list:
-    if i == 1:
-        total_1 += 1
-    elif i == 2:
-        total_2 += 1
-    else:
-        total_3 += 1
-print(total_1 / len(severity_level_list))
-print(total_2 / len(severity_level_list))
-print(total_3 / len(severity_level_list))
-"""
+    lower_bound = float(mean - z * se)
+    upper_bound = float(mean + z * se)
+    
+    return (lower_bound, upper_bound)
+
+print("Average Penalty:", average_penalty)
+print("95% Confidence Interval:", calculate_confidence_interval())
