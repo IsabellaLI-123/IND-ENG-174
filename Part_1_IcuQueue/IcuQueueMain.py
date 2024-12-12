@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 from DepartureProcessWithPQandReservedBeds import simultaneously_return
+=======
+from DepartureProcessWithDPQandReservedBeds import simultaneously_return
+>>>>>>> 2eea173797c2f2011c897100e228c4fc6ba177b0
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -7,6 +11,7 @@ import os
 # Fetch data
 arrival_times, severity_level_list, start_times, departure_times, waiting_times = simultaneously_return()
 
+'''
 # Penalty Function using Logistic Regression
 alpha_1 = 0.01  # Logistic sensitivity for severity and waiting time
 m_1 = 1
@@ -21,15 +26,36 @@ def penaltyFunction(m_1=m_1, alpha_1=alpha_1, severity_level_list=severity_level
         # Total penalty as the sum of mortality probabilities
         total_penalty += m_1 * mortality_probability
     return total_penalty
+'''
+
+
+m_1 = 1 
+alpha_1 = 0.01 
+
+def penaltyFunction1(m_1 = m_1, alpha = alpha_1, severity_level_list = severity_level_list, waiting_times = waiting_times):
+    total_penalty = 0
+    for i in range(len(severity_level_list)):
+        severity = severity_level_list[i]
+        waiting_time = waiting_times[i]
+        total_penalty += m_1 * (np.exp(alpha * severity * waiting_time) - 1)
+    return total_penalty
+
+print(penaltyFunction1())
 
 
 # Calculate average penalty
+<<<<<<< HEAD
 total_penalty = penaltyFunction()
+=======
+penalty = penaltyFunction1()
+>>>>>>> 2eea173797c2f2011c897100e228c4fc6ba177b0
 num_patients = len(waiting_times)
-average_penalty = total_penalty / num_patients
+#average_penalty = total_penalty / num_patients
 
+'''
 print(f"Total Penalty: {total_penalty}")
 print(f"Average Penalty per Patient: {average_penalty}")
+'''
 
 
 
@@ -71,6 +97,8 @@ def plot_discrete_severity_distribution(waiting_times, severity_levels, bin_size
         print(f"Plot saved to {save_path}")
     plt.show()
 
+
+
 # Create output directories
 output_dir = "Part_1_IcuQueue"
 figures_dir = os.path.join(output_dir, "figures")
@@ -103,7 +131,12 @@ plot_discrete_severity_distribution(waiting_times, severity_level_list, save_pat
 penalties_dir = os.path.join(output_dir, "penalties")
 os.makedirs(penalties_dir, exist_ok=True)
 
+<<<<<<< HEAD
 penalty_result_logistic = penaltyFunction()
+=======
+# Save the logistic penalty function result and average penalty to a file
+penalty_result_logistic = penaltyFunction1()
+>>>>>>> 2eea173797c2f2011c897100e228c4fc6ba177b0
 average_penalty = penalty_result_logistic / num_patients
 
 penalty_file_name = "PQ+reserved.txt" 
@@ -113,6 +146,7 @@ with open(penalty_path, "w") as f:
     f.write(f"Penalty 1: {penalty_result_logistic}\n")
 
 print(f"Penalty result saved to {penalty_path}")
+
 
 
 
