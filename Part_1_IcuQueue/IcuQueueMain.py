@@ -113,7 +113,7 @@ def penalty_average(sample_size, m_1 = m_1, alpha_1 = alpha_1):
     return average_penalty, penalty_list
 
 average_penalty, penalty_list = penalty_average(sample_size)
-print(penalty_list)
+#print(penalty_list)
 
 def calculate_confidence_interval(data = penalty_list, confidence=0.95):
     mean = np.mean(data)
