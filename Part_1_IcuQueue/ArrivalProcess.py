@@ -1,9 +1,6 @@
 import numpy as np
 import random
 
-random_seed = 5
-random.seed(random_seed)
-np.random.seed(random_seed)
 
 time_horizon = 10 # If you want to modify this parameter, please simultaneously modify 'time_horizon' in Part_2_CareGiver/CareRequest.py
 lambda_max = 3.0 
